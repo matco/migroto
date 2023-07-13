@@ -1,11 +1,11 @@
 # Migroto
-Migroto is a quick and dirty Python script that retrieves the mortgage rate from the [Migros bank website](https://www.migrosbank.ch/) and store it in a Google spreadsheet. It can easily be setup as a Google Cloud Function that can be run daily.
+Migroto is a quick and dirty Python script that retrieves the mortgage rate from the [Migros bank website](https://www.migrosbank.ch/) and stores it in a Google spreadsheet. It can easily be deployed as a Google Cloud Function that can be run daily.
 
 ## Setup
 This documents how to set up the script as a Google Cloud Function.
 
 ### Create and set up a Google Cloud project
-Create a new Google Cloud project. In `APIs & Services > Library` enable the `Google Sheets` and `Google Drive` APIs.
+Create a new Google Cloud project. In `APIs & Services > Library`, enable the `Google Sheets` and `Google Drive` APIs.
 
 In `APIs & Service > Credentials`, create a new `Service account`. Choose a service account name (`migroto` suggested) and id (`migroto` suggested). Grant the account the role `Basic > Editor`. Edit the newly created service account and create a new key for it in the JSON format. Download the key file and rename it `credentials.json`. Retain the e-mail of the service account (it should be `migroto@migroto.iam.gserviceaccount.com` with the suggested names).
 
