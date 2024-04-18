@@ -33,9 +33,11 @@ In Google Cloud Platform console, go to `Cloud Scheduler` to create a new job. C
 Configure the scheduler with the target type `Pub/Sub` and choose the same topics as for the function. In the message body, enter "NA".
 
 ## Development
-First, install dependencies:
+Set up Python virtual environment and install dependencies:
 ```
-pip3 install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
 ```
 
 Then, edit the file `main.py` to update the id of the spreadsheet. Finally, execute the script with:

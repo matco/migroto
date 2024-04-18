@@ -13,5 +13,7 @@
 .git
 .gitignore
 
+.venv
+
 LICENSE
 README.md
