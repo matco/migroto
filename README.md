@@ -16,12 +16,12 @@ Create a new spreadsheet in your Google Drive. In the sharing settings, invite t
 #### Manual Deployment
 Back in the Google Cloud Platform console, go to `Cloud Functions` to create a new function. Choose a name (`migroto` suggested) and the region that will run the function. In the section `Trigger`, choose `Cloud Pub/Sub` and choose a name for the topic (`migroto` suggested).
 
-Edit the newly created function and copy and paste the content of the files `main.py` and `requirements.txt`. Adjust the file `main.py` to update the id of the spreadsheet. Add the file `credentials.json` retrieved in the previous step along the other files. Choose the runtime `Python 3.9` and set the entry point to `update`.
+Edit the newly created function and copy and paste the content of the files `main.py` and `requirements.txt`. Adjust the file `main.py` to update the id of the spreadsheet. Add the file `credentials.json` retrieved in the previous step along the other files. Choose the runtime `Python 3.12` and set the entry point to `update`.
 
 #### Programmatic deployment
 You can also put the file `credentials.json` at the root of this repository, adjust the file `main.py` to update the id of the spreadsheet, and deploy the function using the gcloud CLI:
 ```
-gcloud functions deploy migroto --region europe-west6 --runtime python39 --trigger-topic migroto --entry-point update
+gcloud functions deploy migroto --region europe-west6 --runtime python312 --trigger-topic migroto --entry-point update
 ```
 
 #### Test the function
