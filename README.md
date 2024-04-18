@@ -13,10 +13,18 @@ In `APIs & Service > Credentials`, create a new `Service account`. Choose a serv
 Create a new spreadsheet in your Google Drive. In the sharing settings, invite the service account created in the previous step as an editor of the file. In the URL of the spreadsheet, identify its id (it is a long alphanumeric string that can easily be spotted).
 
 ### Deploy Cloud Function
+#### Manual Deployment
 Back in the Google Cloud Platform console, go to `Cloud Functions` to create a new function. Choose a name (`migroto` suggested) and the region that will run the function. In the section `Trigger`, choose `Cloud Pub/Sub` and choose a name for the topic (`migroto` suggested).
 
 Edit the newly created function and copy and paste the content of the files `main.py` and `requirements.txt`. Adjust the file `main.py` to update the id of the spreadsheet. Add the file `credentials.json` retrieved in the previous step along the other files. Choose the runtime `Python 3.9` and set the entry point to `update`.
 
+#### Programmatic deployment
+You can also put the file `credentials.json` at the root of this repository, adjust the file `main.py` to update the id of the spreadsheet, and deploy the function using the gcloud CLI:
+```
+gcloud functions deploy migroto --region europe-west6 --runtime python39 --trigger-topic migroto --entry-point update
+```
+
+#### Test the function
 You can then test the function using the dedicated button in the user interface. If it does not work, use the log to identify the issue.
 
 ### Setup scheduler
@@ -30,7 +38,7 @@ First, install dependencies:
 pip3 install -r requirements.txt
 ```
 
-Then, edit the file `main.py` to update the id if the spreadsheet. Finally, execute the script with:
+Then, edit the file `main.py` to update the id of the spreadsheet. Finally, execute the script with:
 ```
 python3 main.py
 ```
