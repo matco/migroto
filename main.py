@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-URL = "https://www.migrosbank.ch/fr/personnes-privees/credits-prets-hypothecaires/prets-hypothecaires/pret-hypothecaire-taux-fixe"
+URL = "https://www.migrosbank.ch/fr/personnes-privees/prets-hypothecaires/taux-hypothecaires-actuels.html"
 HEADERS = {
 	"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0"
 }
@@ -31,7 +31,7 @@ def update(event, context):
 	for row in body.select("tr"):
 		cells = row.select("td")
 		#duration = cells[0].text
-		rate = cells[1].text.replace("%", "")
+		rate = cells[1].text.replace("%", "").replace(".", ",")
 		result.append(rate)
 
 	print(result)
