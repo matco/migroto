@@ -19,15 +19,30 @@ FILE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 def update(event, context):
 	#fetch website
-	website = requests.get(URL, headers=HEADERS)
+	website = None
+	try:
+		website = requests.get(URL, headers=HEADERS)
+		website.raise_for_status()
+	except requests.exceptions.ConnectionError as e:
+		print("Unable to reach website server: ", str(e))
+		return
+	except requests.exceptions.HTTPError as e:
+		print("Unable to access website: ", str(e))
+		return
+	if not website:
+		print("Unable to retrieve website content")
+		return
 
 	#parse website
 	soup = BeautifulSoup(website.text, "html.parser")
 	section = soup.find(id="festhypothek-zinsen-content-0")
-	body = section.find("tbody")
+	if not section:
+		print("Unable to find the element in the DOM")
+		return
 
 	#transform result into an array
 	result = [datetime.datetime.now().replace(microsecond=0).isoformat()]
+	body = section.find("tbody")
 	for row in body.select("tr"):
 		cells = row.select("td")
 		#duration = cells[0].text
