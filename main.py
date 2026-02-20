@@ -2,7 +2,7 @@ import datetime
 import requests
 from bs4 import BeautifulSoup
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 
 URL = "https://www.migrosbank.ch/fr/personnes-privees/prets-hypothecaires/modeles-hypothecaires/pret-hypothecaire-taux-fixe.html"
 HEADERS = {
@@ -50,7 +50,7 @@ def update(event, context):
 
 	print(result)
 
-	credentials = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", SCOPE)
+	credentials = service_account.Credentials.from_service_account_file("credentials.json", scopes=SCOPE)
 	client = gspread.authorize(credentials)
 
 	sheet = client.open_by_key(FILE).sheet1
