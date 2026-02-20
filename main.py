@@ -45,7 +45,6 @@ def update(event, context):
 	body = section.find("tbody")
 	for row in body.select("tr"):
 		cells = row.select("td")
-		#duration = cells[0].text
 		rate = cells[1].text.replace("%", "").replace(".", ",")
 		result.append(rate)
 
