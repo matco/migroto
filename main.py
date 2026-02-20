@@ -17,7 +17,7 @@ SCOPES = [
 ]
 FILE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
-def update(event, context):
+def update(event = None, context = None):
 	#fetch website
 	website = None
 	try:
@@ -57,4 +57,4 @@ def update(event, context):
 	sheet.append_row(result, value_input_option="USER_ENTERED")
 
 if __name__ == "__main__":
-	update(None, None)
+	update()
