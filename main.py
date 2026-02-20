@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-URL = "https://www.migrosbank.ch/fr/personnes-privees/prets-hypothecaires/taux-hypothecaires-actuels.html"
+URL = "https://www.migrosbank.ch/fr/personnes-privees/prets-hypothecaires/modeles-hypothecaires/pret-hypothecaire-taux-fixe.html"
 HEADERS = {
 	"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0"
 }
@@ -35,7 +35,7 @@ def update(event, context):
 
 	#parse website
 	soup = BeautifulSoup(website.text, "html.parser")
-	section = soup.find(id="festhypothek-zinsen-content-0")
+	section = soup.find(attrs={"name": "festhypothek-zinsen-content-0"})
 	if not section:
 		print("Unable to find the element in the DOM")
 		return
