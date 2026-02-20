@@ -1,8 +1,8 @@
 # Migroto
-Migroto is a quick and dirty Python script that retrieves the mortgage rate from the [Migros bank website](https://www.migrosbank.ch/) and stores it in a Google spreadsheet. It can easily be deployed as a Google Cloud Function that can be run daily.
+Migroto is a quick and dirty Python script that retrieves the mortgage rate from the [Migros bank website](https://www.migrosbank.ch/) and stores it in a Google spreadsheet. It can easily be deployed in Google Cloud Run.
 
-## Setup
-This section describes how to set up the script as a Google Cloud Function.
+## Google Cloud Platform set up
+This section describes how to set up the script as a Google Cloud Run service.
 
 ### Create and set up a Google Cloud project
 Create a new Google Cloud project. In `APIs & Services > Library`, enable the `Google Sheets` and `Google Drive` APIs.
@@ -12,23 +12,49 @@ In `APIs & Services > Credentials`, create a new `Service account`. Choose a ser
 ### Create the Google spreadsheet
 Create a new spreadsheet in your Google Drive. In the sharing settings, invite the service account created in the previous step as an editor of the file. In the URL of the spreadsheet, identify its id (it is a long alphanumeric string that can easily be spotted).
 
-### Deploy Cloud Function
+### Deploy Cloud Run service
 #### Manual Deployment
-Back in the Google Cloud Platform console, go to `Cloud Functions` to create a new function. Choose a name (`migroto` suggested) and the region that will run the function. In the section `Trigger`, choose `Cloud Pub/Sub` and choose a name for the topic (`migroto` suggested).
+Back in the Google Cloud Platform console, go to `Cloud Run`. Then, click on `Services` and `Write a function`. Choose the following options (and keep the default values for options not mentioned below):
+- Name: any name (`migroto` suggested)
+- Region: the region of your choice that will run the function.
+- Runtime: `Python 3.14`
+- Trigger: add a `Pub/Sub` trigger, and set the following options (keep default values for options not mentioned below):
+	- Name: any name (`migroto` suggested)
+	- Topic: create a topic with the name of your choice (`migroto` suggested), and grant access to the previously created `Service account` if asked
+	- Service account: select the previously created `Service account`
+- Authentication: `Require authentication`
+- In the section `Containers > Variables & Secrets`, set the variable `SPREADSHEET_ID` with spreadsheet id as the value
 
-Edit the newly created function and copy and paste the content of the files `main.py` and `requirements.txt`. Adjust the file `main.py` to update the id of the spreadsheet. Add the file `credentials.json` retrieved in the previous step along the other files. Choose the runtime `Python 3.12` and set the entry point to `update`.
+In the editor, set the entry point to `update`, then copy and paste the content of the files `main.py` and `requirements.txt`. Add the file `credentials.json` retrieved in the previous step along the other files.
 
 #### Programmatic deployment
-You can also put the file `credentials.json` at the root of this repository, adjust the file `main.py` to update the id of the spreadsheet, and deploy the function using the gcloud CLI:
+You can achieve the same goal using the Google Cloud CLI. This works only if the function has not been deployed manually previously.
+
+The first step is to create the Pub/Sub topic that will act as the trigger:
 ```
-gcloud functions deploy migroto --region europe-west6 --runtime python312 --trigger-topic migroto --entry-point update
+gcloud pubsub topics create migroto
+```
+
+Then, grant the service account permission to publish to the topic:
+```
+gcloud pubsub topics add-iam-policy-binding migroto --member="serviceAccount:migroto@migroto.iam.gserviceaccount.com" --role="roles/pubsub.publisher"
+```
+
+Then, put the file `credentials.json` at the root of this repository and deploy the function using the gcloud CLI:
+```
+gcloud functions deploy migroto --gen2 --region europe-west6 --runtime python314 --trigger-topic migroto --entry-point update --set-env-vars SPREADSHEET_ID=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
+
+To delete the function, use:
+```
+gcloud functions delete migroto --region europe-west6
 ```
 
 #### Test the function
 You can then test the function using the dedicated button in the user interface. If it does not work, use the log to identify the issue.
 
 ### Setup scheduler
-In Google Cloud Platform console, go to `Cloud Scheduler` to create a new job. Choose a name (`migroto` suggested) and select the same region as for the function. In `Frequency`, choose `0 10 * * *` to run the function every day at 10.
+In the Google Cloud Platform console, go to `Cloud Scheduler` to create a new job. Choose a name (`migroto` suggested) and select the same region as for the function. In `Frequency`, choose `0 10 * * *` to run the function every day at 10.
 
 Configure the scheduler with the target type `Pub/Sub` and choose the same topics as for the function. In the message body, enter "NA".
 
@@ -40,7 +66,8 @@ source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
-Then, edit the file `main.py` to update the id of the spreadsheet. Finally, execute the script with:
+Finally, set the spreadsheet id as an environment variable and execute the script:
 ```
+export SPREADSHEET_ID=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 python3 main.py
 ```

@@ -1,4 +1,5 @@
 import datetime
+import os
 import requests
 from bs4 import BeautifulSoup
 import gspread
@@ -15,7 +16,9 @@ SCOPES = [
 	"https://www.googleapis.com/auth/drive.file",
 	"https://www.googleapis.com/auth/drive"
 ]
-FILE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+FILE = os.getenv("SPREADSHEET_ID")
+if not FILE:
+	raise ValueError("SPREADSHEET_ID environment variable is required")
 
 def update(event = None, context = None):
 	#fetch website
@@ -55,6 +58,8 @@ def update(event = None, context = None):
 
 	sheet = client.open_by_key(FILE).sheet1
 	sheet.append_row(result, value_input_option="USER_ENTERED")
+
+	return result
 
 if __name__ == "__main__":
 	update()
